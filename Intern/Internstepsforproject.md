@@ -59,10 +59,10 @@ Your container_id is the one you can get from running the second code
 Each code representation that is being run when you do a docker build is explained below. Our goal is to build the flask app using a docker image 
 
 ##### The Flask app (Backend app)
-[Flask app image](Intern\flaskappimage.png)
+[Flask app image](https://github.com/Timtech4u/devops-project-app/blob/main/Intern/flaskappimage.png)
 
 ##### The docker image requirements
-[Image of requirements](Intern\Image_of_requirements.png)
+[Image of requirements](https://github.com/Timtech4u/devops-project-app/blob/main/Intern/Image_of_requirements.png)
 
 ##### Docker build instructions, using the flask app, requirements, app run command. 
 
@@ -99,4 +99,4 @@ This sets the default command to run when the container starts. In this case, it
 ## 3. Testing the app
 
 Once the front end and back end local hosts are opened in your browser, using the app should get the correct responses on the front end and back end 
-[Output of web app](Intern\display_of_running_app.png)
+[Output of web app](https://github.com/Timtech4u/devops-project-app/blob/main/Intern/display_of_running_app.png)
