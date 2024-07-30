@@ -67,7 +67,34 @@ The command is used to set up Docker in rootless mode. Running Docker in rootles
 Without this configuration, Jenkins may encounter an an error when tryign to run docker commands (See Errors & resolve guide at the bottom of the page)
 
 
-## Step 5: Updating Javascript backend URL in repository.
+## Step 5: Exposing Ports necessary.
+Exposing ports in your security groups is necessary for various reasons related to accessibility, communication, and security.
+Jenkins typically runs on port 8080. To access the Jenkins web interface from your local machine or any other network, you need to open port 8080 in the security group associated with your Jenkins server.
+
+Also If the application consists of multiple services (like a backend and a frontend), these services often communicate over specific ports. For example, your backend might run on port 5555, and your frontend on port 80.
+
+```
+Log in to AWS Management Console
+Navigate to the EC2 Dashboard.
+Select Security Groups:
+Under the Network & Security section, select Security Groups.
+Create or Modify a Security Group
+Select the security group associated with your Jenkins server or create a new one.
+Add inbound rules to open the necessary ports.
+Click on the "Inbound rules" tab.
+Add a rule for each port you need to open.
+```
+
+An example is 
+```
+Type: Custom TCP Rule
+Protocol: TCP
+Port Range: 8080
+Source: Your IP (or a specific IP range)
+```
+
+
+## Step 6: Updating Javascript backend URL in repository.
 
 By updating the backend URL in the JavaScript, the frontend can correctly communicate with the backend server hosted on a remote IP, ensuring the application works in a production environment. The frontend JavaScript code was initially configured to make API calls to localhost. This works in a local development environment but fails when deployed to a remote server. 
 
@@ -80,12 +107,10 @@ to
  fetch('http:// 18.130.110.234:5555/counter/increment', { method: 'POST' })
 ```
 
-
-## Step 6 Exposing Ports
-
-
 ## Step 7 Jenkins UI: Building application, checking console output for successful run 
+Run the build process in jenkins and check the console output for any errors it may encounter,
 
-## Step 8: Killing the Virtual machine
+## Step 8: Stopping the Jenkins build and Killing the Virtual machine
+Once project set up is completed and the goal for the project is achieved, you can disable the project within the Jenkins server before turning off your virtual machine. This is for the purpose of this project. Howeveer in a formal environment, you can choose to disable your specific project if theres other use for Jenkins, without killing the virtual machine. 
 
 ##### Insert link toDocumentation for the webapp/image that was automated
