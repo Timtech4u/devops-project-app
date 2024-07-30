@@ -1,102 +1,91 @@
 # Steps taken in doing assignment
 
-## 1. Setting up your local repository 
+The goal of this project is to automate a docker build of an image by using Jenkins as the automation tool. To automate the building and deployment of the frontend and backend applications, Jenkins automates repetitive tasks, ensuring consistent builds, which enables continuous integration/continuous deployment (CI/CD) practices.
 
-Clone the github repository with the project by running the command 
+
+### Step 1: Setting up a virtual machine to install Jenkins on
+
+You can set up Jenkins on your local virtual machine or on a cloud service provider virtual machine. For this task, I used AWS EC2 instance. Then Jenkins can be opened on your web server using the server IP from the virtual machine (VM). Once suggested plugins and admin user is created, you can run your jenkins configuration for the project
+
+After installing the virtual machine run the following commands to install jenkins on the VM
+
+
+### Step 2: Setting up Jenkins for CI/CD
 ```
-git clone https://github.com/Timtech4u/devops-project-app.git 
-``` 
-
-Once the repository is cloned, ensure it appears in your local repository and is saved in and ensure you are working with the same directory . You can run the commands to do the following: 
-Print current work directory: Check what work environment youre in.
+sudo apt update -y #To update the server
+sudo apt install openjdk-11-jdk #Jave, a Prequisite for jenkins
 ```
-pwd
-```
-Change current work directory: To work within the local repository of the project. by running cd path/to/your/repository where the devops-project-app is the repo. 
+Next step is to add the repository for Jenkins in our virtual machine by running the commands. These are used to add the Jenkins repository to a Debian-based system's package sources list, allowing you to install Jenkins using the package manager (apt).
 
 ```
-cd devops-project-app 
+wget -q -O - https: //pkg.jenkins.io/debian-stable/jenkins.io.key | sudo apt-key add -
+sudo sh -c 'echo deb http: //pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
 ```
-Ensure the dirctory appears in your visual code window
+
+Then the next commands are run
+
 ```
-code .
-#or
-code path/to/your/repository
+sudo apt update
+sudo apt install jenkins
 ```
-Once you are within the right work environment you can start the following
 
-## 2. Running the APP
+### Start jenkins and check the status
 
-### Running the front end
-To run the app, you can download a live server to view the user interface ie your index.html file 
-
-### Running the backend with docker. I.e Creating an image.
-
-Ensure to run the Dockerfile ```(Docker should be installed on your system)```, which contains a set of instructions (requirements.txt) used by Docker to build an image and run a container. 
-
-### Build the docker image
- ```
- docker build -t app .
- ```
-### Run the Docker container ("app" in code block, refers to the name of my backend app file without its extension)
 ```
-docker run -p 5555:5555 app
+sudo systemctl start kenkins
+systemctl status jenkins
+sudo ufw allow 8080
+sudo ufw status
+```
 
- ```
- making sure the port mapping is the same as that in your app file.
- 
-You can check docker status, container_id and stop the container after by using the commands
+## Step 3: Installing docker on the virtual machine 
+
+The virtual machine originally does not have docker on it, but we need it to run in order to build a container in jenkins. Running docker can show if you already have it installed. 
+
 ```
 docker --version
-docker --ps
-docker stop container_id
 ```
-Your container_id is the one you can get from running the second code
-
-
-
-#### Dockerfile Instructions used when running the above
-Each code representation that is being run when you do a docker build is explained below. Our goal is to build the flask app using a docker image 
-
-##### The Flask app (Backend app)
-[Flask app image](https://github.com/Timtech4u/devops-project-app/blob/main/Intern/flaskappimage.png)
-
-##### The docker image requirements
-[Image of requirements](https://github.com/Timtech4u/devops-project-app/blob/main/Intern/Image_of_requirements.png)
-
-##### Docker build instructions, using the flask app, requirements, app run command. 
-
+A feedback you may get in jenkins if this isnt done is "Command 'docker' not found, but can be installed with"
 ```
-FROM python:3.8-slim
+sudo snap install docker         # version 24.0.5, or
+sudo apt  install docker.io      # version 24.0.5-0ubuntu1
+sudo apt  install podman-docker  # version 4.7.2+ds1-2build1
 ```
-This line specifies the base image to use for the Docker image. python:3.8-slim is a lightweight version of Python 3.8.
+However a shorter code can be run on linux servers and since we are running an ubuntu machine, we can run this command over manually installing docker. This can be retrived from this repository https: //github.com/docker/docker-install/tree/master
+```
+curl -fsSL https: //get.docker.com -o get-docker.sh
+sh get-docker.sh
+``` 
 
+## Step 4: Configure jenkins to use docker
+Jenkins upon first configuration may not have the appropriate privileges to access the docker socket to run docker commands. This access allows Jenkins interaction with docker Daemon
 ```
-WORKDIR /app
-```
-This sets the working directory inside the Docker container to /app. All subsequent instructions will be run from this directory.
-```
-COPY requirements.txt requirements.txt
+dockerd-rootless-setuptool.sh install
 ```
 
-This copies the requirements.txt file from your local machine to the /app directory in the Docker image.
-```
-RUN pip install -r requirements.txt
-```
-This installs the Python dependencies listed in requirements.txt into the Docker image.
-
-```
-COPY . .
-```
-This copies all the files from your local directory to the /app directory in the Docker image
-
-```
-CMD ["python", "app.py"]
-```
-This sets the default command to run when the container starts. In this case, it will run python app.py.
+The command is used to set up Docker in rootless mode. Running Docker in rootless mode allows you to run the Docker daemon (dockerd) and containers as a non-root user, enhancing security by reducing the privileges required to run Docker.
+Without this configuration, Jenkins may encounter an an error when tryign to run docker commands (See Errors & resolve guide at the bottom of the page)
 
 
-## 3. Testing the app
+## Step 5: Updating Javascript backend URL in repository.
 
-Once the front end and back end local hosts are opened in your browser, using the app should get the correct responses on the front end and back end 
-[Output of web app](https://github.com/Timtech4u/devops-project-app/blob/main/Intern/display_of_running_app.png)
+By updating the backend URL in the JavaScript, the frontend can correctly communicate with the backend server hosted on a remote IP, ensuring the application works in a production environment. The frontend JavaScript code was initially configured to make API calls to localhost. This works in a local development environment but fails when deployed to a remote server. 
+
+This was run by changing the code 
+```
+fetch('http:// localhost:5555/counter/increment', { method: 'POST' })
+```
+to 
+```
+ fetch('http:// 18.130.110.234:5555/counter/increment', { method: 'POST' })
+```
+
+
+## Step 6 Exposing Ports
+
+
+## Step 7 Jenkins UI: Building application, checking console output for successful run 
+
+## Step 8: Killing the Virtual machine
+
+##### Insert link toDocumentation for the webapp/image that was automated
