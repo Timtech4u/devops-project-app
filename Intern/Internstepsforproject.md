@@ -1,3 +1,7 @@
+
+# Project Overview
+This project is a simple web application that consists of a counter displayed on a webpage. Users can increment the counter by clicking a button. The application is divided into two main parts: the frontend and the backend. The frontend is built using HTML, CSS, and JavaScript, and the backend is built using Flask (a Python web framework). Docker is used to containerize both the frontend and backend, ensuring consistency across different environments. Jenkins is used for Continuous Integration and Continuous Deployment (CI/CD), automating the build, test, and deployment processes.
+
 # Steps taken in doing assignment
 
 The goal of this project is to automate a docker build of an image by using Jenkins as the automation tool. To automate the building and deployment of the frontend and backend applications, Jenkins automates repetitive tasks, ensuring consistent builds, which enables continuous integration/continuous deployment (CI/CD) practices.
