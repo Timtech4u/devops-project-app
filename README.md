@@ -33,3 +33,20 @@ This is a simple counter application with a Python/Flask backend and an HTML/CSS
 1. Create a new Jenkins pipeline job.
 2. Configure the pipeline to use the `Jenkinsfile` from this repository.
 3. Run the pipeline to build both backend and frontend Docker images.
+
+## Backend dependency verification
+
+The backend uses Python 3.11 and a fully pinned dependency file generated from
+`backend/requirements.in`. Flask, Werkzeug and Flask-CORS are upgraded together.
+
+```sh
+python3.11 -m venv .venv
+. .venv/bin/activate
+pip install -r backend/requirements.txt
+PYTHONPATH=backend python -m unittest discover -s backend/tests -v
+pip check
+```
+
+Tests cover counter updates, the frontend CORS preflight and rejection of implicit
+private-network access. Refresh dependencies with
+`uv pip compile --upgrade --python 3.11 backend/requirements.in -o backend/requirements.txt`.
